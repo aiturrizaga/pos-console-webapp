@@ -1,0 +1,25 @@
+<main class="relative h-screen bg-white px-6 py-24 sm:py-32 lg:px-8">
+  <div class="grid h-full place-items-center">
+    <div class="text-center">
+      <p class="text-2xl font-semibold text-primary-800">401</p>
+      <h1 class="mt-4 text-3xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">
+        ¡Uy! No tienes acceso
+      </h1>
+      <p class="mt-6 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
+        Parece que no tienes permiso para ver esta sección. Si crees que esto es un error, contacta a tu administrador.
+      </p>
+      <div class="mt-10 flex items-center justify-center gap-x-6">
+        <a routerLink="" pButton>Volver al inicio</a>
+      </div>
+      <div class="mt-10 flex items-center justify-center gap-x-6">
+        ó
+      </div>
+      <div class="mt-10 flex items-center justify-center gap-x-6">
+        <button type="button" pButton text (click)="logout()"
+                class="underline text-gray-500">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
