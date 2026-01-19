@@ -43,4 +43,13 @@ export class ProductApi {
     return this.#http.delete<void>(`${ this.baseUrl }/${ id }`);
   }
 
+  search(q: string, page = 0, size = 20) {
+    const params = new HttpParams()
+      .set('q', q ?? '')
+      .set('page', page)
+      .set('size', size);
+
+    return this.#http.get<ApiResponse<Page<ProductResponse>>>(`${this.baseUrl}/search`, { params });
+  }
+
 }
