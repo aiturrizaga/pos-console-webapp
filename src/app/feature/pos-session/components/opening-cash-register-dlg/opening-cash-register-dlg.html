@@ -1,0 +1,42 @@
+<form [formGroup]="form"
+      (ngSubmit)="openCashRegister()"
+      class="flex flex-col gap-4 w-full">
+
+  <div class="flex flex-col gap-1 w-full">
+    <label for="txtAmountPEN">Efectivo en soles (S/)</label>
+    <p-input-number
+      inputId="txtAmountPEN"
+      formControlName="amountPEN"
+      [min]="0"
+      [invalid]="formValidator.hasError('amountPEN')"/>
+    @if (formValidator.hasError('amountPEN')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('amountPEN') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1 w-full">
+    <label for="txtAmountUSD">Efectivo en dólares ($)</label>
+    <p-input-number
+      inputId="txtAmountUSD"
+      formControlName="amountUSD"
+      [min]="0"
+      [invalid]="formValidator.hasError('amountUSD')"/>
+    @if (formValidator.hasError('amountUSD')) {
+      <p-message severity="error" size="small" variant="simple">
+        {{ formValidator.getErrorMessage('amountUSD') }}
+      </p-message>
+    }
+  </div>
+
+  <div class="flex justify-end gap-2">
+    <button pButton severity="secondary" type="button" (click)="close()">
+      <span pButtonLabel>Cancelar</span>
+    </button>
+
+    <button pButton type="submit">
+      <span pButtonLabel>Abrir caja</span>
+    </button>
+  </div>
+</form>

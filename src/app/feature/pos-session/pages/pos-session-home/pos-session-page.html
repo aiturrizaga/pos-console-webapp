@@ -1,1 +1,82 @@
-<p>pos-session-page works!</p>
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl text-gray-700 font-bold">
+    Sesión de caja
+  </h2>
+
+  <div class="flex items-center justify-between gap-2">
+    <button pButton type="button" size="small" (click)="openOpeningCashRegisterDlg()">
+      Aperturar caja
+    </button>
+
+    <button pButton type="button" size="small" severity="danger" (click)="confirmCloseCashRegister()">
+      Cerrar caja
+    </button>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg py-6 border border-gray-300 shadow space-y-6">
+
+  <div class="flex items-center justify-center gap-2">
+    <div class="text-2xl font-medium text-white bg-green-600 rounded-lg px-4 py-2.5">
+      ABIERTO
+    </div>
+
+    <div class="flex flex-col">
+      <div class="text-2xl font-medium">Caja Abierta</div>
+      <p class="text-gray-600">
+        ¡Qué tengas un excelente día lleno de ventas!
+      </p>
+    </div>
+  </div>
+
+  <hr class="text-gray-300">
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-4 gap-2">
+      <div class="flex flex-col gap-1">
+        <p class="text-sm font-medium text-gray-600">Aperturado por:</p>
+        <p class="text-base text-gray-800">Miguel Soto Ramirez</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-sm font-medium text-gray-600">Hora de apertura:</p>
+        <p class="text-base text-gray-800">15 febrero 2026, 11:36 am</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-sm font-medium text-gray-600">Apertura de caja (S/):</p>
+        <p class="text-base text-gray-800">S/ 0.00</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <p class="text-sm font-medium text-gray-600">Apertura de caja ($)</p>
+        <p class="text-base text-gray-800">$ 0.00</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="text-gray-300">
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col items-start gap-1">
+        <div class="text-4xl font-bold text-gray-700">S/ 0.00</div>
+        <p class="text-base text-gray-600">Total de ventas neto soles</p>
+      </div>
+
+      <div class="flex flex-col items-start gap-1">
+        <div class="text-4xl font-bold text-gray-700">$ 0.00</div>
+        <p class="text-base text-gray-600">Total de ventas neto dólares</p>
+      </div>
+
+      <div class="flex flex-col items-start gap-1">
+        <div class="text-4xl font-bold text-gray-700">0</div>
+        <p class="text-base text-gray-600">Transacciones</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<p-confirm-dialog/>
