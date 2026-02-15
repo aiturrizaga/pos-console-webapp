@@ -21,6 +21,11 @@ export const routes: Routes = [
         loadChildren: () => import('./feature/pos-session/pos-session.routes').then(m => m.routes)
       },
       {
+        path: 'sales',
+        data: { roles: ['admin'] },
+        loadChildren: () => import('./feature/sale/sale.routes').then(m => m.routes)
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'cash-drawer'

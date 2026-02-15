@@ -40,8 +40,14 @@ export class ShellLayout implements OnInit {
     {
       id: '2',
       icon: 'ti ti-database-dollar text-2xl',
-      label: 'Sesion de caja',
+      label: 'Sesión de caja',
       routerLink: 'pos-session'
+    },
+    {
+      id: '3',
+      icon: 'ti ti-report-money text-2xl',
+      label: 'Historial de ventas',
+      routerLink: 'sales'
     },
   ]);
   userOptions = signal<MenuItem[]>([
