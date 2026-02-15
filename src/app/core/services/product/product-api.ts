@@ -19,11 +19,13 @@ export class ProductApi {
     return this.#http.get<ApiResponse<ProductResponse>>(`${ this.baseUrl }/${ id }`);
   }
 
-  getAll(opts?: { page?: number; size?: number; sort?: string | string[]; }) {
+  getAll(opts?: { active: boolean; q?: string; page?: number; size?: number; sort?: string | string[]; }) {
     let params = new HttpParams();
 
     if (opts?.page != null) params = params.set('page', String(opts.page));
     if (opts?.size != null) params = params.set('size', String(opts.size));
+    if (opts?.active != null) params = params.set('active', String(opts.active));
+    if (opts?.q != null) params = params.set('q', String(opts.q));
 
     const sort = opts?.sort;
     if (typeof sort === 'string') {

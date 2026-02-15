@@ -19,7 +19,7 @@
       <div class="flex flex-col gap-1 mb-4">
         <p-auto-complete
           [formControl]="searchCtrl"
-          [suggestions]="searchedSkuProducts()"
+          [suggestions]="searchedProducts()"
           (completeMethod)="search($event)"
           (onSelect)="selectSkuProductFromAutocomplete($event)"
           optionLabel="name"
@@ -31,7 +31,7 @@
 
       <div class="grid grid-cols-4 gap-2">
         @for (item of favoriteItems(); track item.id) {
-          <button type="button" (click)="selectSkuProduct(item)"
+          <button type="button" (click)="selectProduct(item)"
                   class="border border-gray-300 p-2 cursor-pointer rounded hover:shadow h-24">
             <span class="text-base font-medium">{{ item.name }}</span>
           </button>
@@ -40,48 +40,62 @@
     </div>
   </p-card>
 
-  <p-card header="Venta">
+  <p-card>
     <div class="flex flex-col gap-2">
-      <div class="border border-gray-300 p-2 rounded-lg bg-gray-100">
-        <div class="flex justify-between items-center gap-2">
-          <button type="button" class="flex items-center justify-center gap-2 cursor-pointer">
-            <i class="ti ti-user-circle text-4xl"></i>
-            <span class="text-lg font-medium">Agregar cliente</span>
+
+      <div class="flex justify-between items-center gap-2">
+        <input type="text" pInputText class="w-full" placeholder="Nueva cuenta">
+
+        <div class="flex items-center justify-center">
+          <button type="button" pButton text rounded>
+            <i class="ti ti-user-circle text-2xl"></i>
           </button>
 
           <button type="button" pButton text rounded>
-            <i class="ti ti-dots-vertical text-xl"></i>
+            <i class="ti ti-dots-vertical text-2xl"></i>
           </button>
         </div>
       </div>
 
       <div class="border border-gray-300 p-2.5 rounded-lg h-96">
         <div class="flex flex-col gap-2 overflow-y-auto">
-          @for (item of selectedSkuProducts(); track item.id) {
+          @for (item of selectedProducts(); track item.id; let index = $index) {
             <div class="flex justify-between items-center gap-2">
               <div class="flex flex-col gap-1">
                 <span class="text-base font-medium">{{ item.name }}</span>
-                <span>{{ item.salePrice | currency:'PEN':'S/' }}</span>
+                <span>{{ item.sku.price | currency:'PEN':'S/' }}</span>
               </div>
 
-              <p-input-number [showButtons]="true"
-                              buttonLayout="horizontal"
-                              [inputStyle]="{ width: '3rem' }">
-                <ng-template #incrementbuttonicon>
-                  <span class="ti ti-plus"></span>
-                </ng-template>
-                <ng-template #decrementbuttonicon>
-                  <span class="ti ti-minus"></span>
-                </ng-template>
-              </p-input-number>
+              <div class="inline-flex gap-2">
+                <p-input-number [showButtons]="true"
+                                [(ngModel)]="item.qty"
+                                buttonLayout="horizontal"
+                                [min]="1"
+                                [inputStyle]="{ width: '3rem' }">
+                  <ng-template #incrementbuttonicon>
+                    <span class="ti ti-plus"></span>
+                  </ng-template>
+                  <ng-template #decrementbuttonicon>
+                    <span class="ti ti-minus"></span>
+                  </ng-template>
+                </p-input-number>
+
+                <button type="button" pButton text rounded severity="danger" (click)="removeProductAt(index)">
+                  <i class="ti ti-trash text-2xl"></i>
+                </button>
+              </div>
             </div>
           }
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <button type="button" pButton>
-          <span class="text-xl font-medium">Cobrar 4 items</span>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" pButton severity="success">
+          <span class="text-xl font-medium">Guardar</span>
+        </button>
+
+        <button type="button" pButton class="col-span-2">
+          <span class="text-xl font-medium">Cobrar {{ totalPrice() | currency:'PEN':'S/ ' }}</span>
         </button>
       </div>
     </div>

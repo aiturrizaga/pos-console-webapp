@@ -1,14 +1,15 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { AutoCompleteCompleteEvent, AutoCompleteModule, AutoCompleteSelectEvent } from 'primeng/autocomplete';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductApi } from '@/core/services/product/product-api';
-import { ProductResponse, ProductSkuResponse } from '@/core/interfaces/product';
+import { ProductResponse, ProductSaleItem, ProductSkuResponse } from '@/core/interfaces/product';
 import { CurrencyPipe } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-cash-drawer-page',
@@ -20,7 +21,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
     AutoCompleteModule,
     ReactiveFormsModule,
     CurrencyPipe,
-    InputNumberModule
+    InputNumberModule,
+    InputTextModule,
+    FormsModule
   ],
   templateUrl: './cash-drawer-page.html',
   styles: ``,
@@ -29,60 +32,49 @@ export class CashDrawerPage implements OnInit {
   searchCtrl = new FormControl();
   #productApi = inject(ProductApi);
 
-  searchedSkuProducts = signal<ProductSkuResponse[]>([]);
-  favoriteItems = signal<ProductSkuResponse[]>([]);
-  selectedSkuProducts = signal<ProductSkuResponse[]>([]);
+  searchedProducts = signal<ProductResponse[]>([]);
+  favoriteItems = signal<ProductResponse[]>([]);
+  selectedProducts = signal<ProductSaleItem[]>([]);
+
+  totalPrice = computed(() => {
+    return this.selectedProducts().reduce((sum, item) => {
+      const price = item.sku.price;
+
+      return sum + (price || 0) * (item.qty ?? 1);
+    }, 0);
+  });
 
   ngOnInit(): void {
     this.getFavoriteProducts();
   }
 
   search(event: AutoCompleteCompleteEvent): void {
-    this.#productApi.search(event.query).subscribe(res => {
-      if (!res?.data?.content) {
-        this.searchedSkuProducts.set([]);
-        return;
+    this.#productApi.getAll({ q: event.query, active: true }).subscribe(res => {
+      if (res && res.data && res.data.content) {
+        this.searchedProducts.set(res.data.content);
       }
-
-      const skus = this.getSkusFromProducts(res.data.content);
-      this.searchedSkuProducts.set(skus);
     });
   }
 
   selectSkuProductFromAutocomplete(event: AutoCompleteSelectEvent): void {
-    this.selectSkuProduct(event.value)
+    this.selectProduct(event.value);
   }
 
-  selectSkuProduct(sku: ProductSkuResponse): void {
-    this.selectedSkuProducts.update(prev => [...prev, sku]);
+  selectProduct(product: ProductResponse): void {
+    const item: ProductSaleItem = {...product, qty: 1};
+    this.selectedProducts.update(prev => [...prev, item]);
   }
 
-  removeSkuProduct(sku: ProductSkuResponse): void {
-    this.selectedSkuProducts.update(prev =>
-      prev.filter(item => item.id !== sku.id)
-    );
+  removeProductAt(index: number): void {
+    this.selectedProducts.update(prev => prev.filter((_, i) => i !== index));
   }
 
   getFavoriteProducts(): void {
-    this.#productApi.getAll().subscribe(res => {
-      if (!res?.data?.content) {
-        this.favoriteItems.set([]);
-        return;
+    this.#productApi.getAll({ active: true }).subscribe(res => {
+      if (res && res.data && res.data.content) {
+        this.favoriteItems.set(res.data.content);
       }
-
-      const skus = this.getSkusFromProducts(res.data.content);
-      this.favoriteItems.set(skus);
     })
-  }
-
-  private getSkusFromProducts(products: ProductResponse[]) {
-    return products.flatMap(product =>
-      (product.skus ?? []).map(sku => ({
-        ...sku,
-        productId: product.id,
-        productName: product.name
-      }))
-    );
   }
 
 }
