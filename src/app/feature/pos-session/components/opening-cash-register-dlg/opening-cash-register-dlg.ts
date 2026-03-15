@@ -5,6 +5,7 @@ import { MessageModule } from 'primeng/message';
 import { FormValidator } from '@/shared/utils/form-validator.util';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ButtonModule } from 'primeng/button';
+import { PosSessionApi } from '@/core/services/pos/pos-session-api';
 
 @Component({
   selector: 'app-opening-cash-register-dlg',
@@ -22,6 +23,7 @@ export class OpeningCashRegisterDlg implements OnInit, OnDestroy {
   formValidator!: FormValidator;
 
   #fb = inject(FormBuilder);
+  #posSessionApi = inject(PosSessionApi);
   private readonly _dialogRef = inject(DynamicDialogRef);
   private readonly _dialogService = inject(DialogService);
 
@@ -35,7 +37,11 @@ export class OpeningCashRegisterDlg implements OnInit, OnDestroy {
       return;
     }
 
-    this.close();
+    this.#posSessionApi.open(this.form.value).subscribe(res => {
+      if (res && res.data) {
+        this.close(res.data);
+      }
+    });
   }
 
   close(data?: any): void {

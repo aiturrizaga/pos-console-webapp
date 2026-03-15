@@ -1,4 +1,21 @@
-<div class="grid grid-cols-2 gap-2">
+@if (!posSession()) {
+  <div
+    class="flex items-center p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+    role="alert">
+    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+         viewBox="0 0 20 20">
+      <path
+        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+    </svg>
+    <span class="sr-only">Info</span>
+    <div>
+      <span class="font-medium">¡Advertencia!</span> Apertura la caja para poder vender.
+    </div>
+  </div>
+}
+
+<div [ngClass]="{'opacity-50 pointer-events-none select-none': !posSession()}"
+     class="grid grid-cols-2 gap-2">
   <p-card header="Productos">
     <div class="flex justify-start items-center gap-2 mb-4">
       <button type="button" class="cursor-pointer">
@@ -89,15 +106,17 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" pButton severity="success">
-          <span class="text-xl font-medium">Guardar</span>
-        </button>
+      @if (selectedProducts() && selectedProducts().length > 0) {
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" pButton severity="success">
+            <span class="text-xl font-medium">Guardar</span>
+          </button>
 
-        <button type="button" pButton class="col-span-2">
-          <span class="text-xl font-medium">Cobrar {{ totalPrice() | currency:'PEN':'S/ ' }}</span>
-        </button>
-      </div>
+          <button type="button" pButton class="col-span-2">
+            <span class="text-xl font-medium">Cobrar {{ totalPrice() | currency:'PEN':'S/ ' }}</span>
+          </button>
+        </div>
+      }
     </div>
   </p-card>
 </div>

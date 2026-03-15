@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -6,20 +6,33 @@ import {
   OpeningCashRegisterDlg
 } from '../../components/opening-cash-register-dlg/opening-cash-register-dlg';
 import { ConfirmationService } from 'primeng/api';
+import { PosSessionApi } from '@/core/services/pos/pos-session-api';
+import { finalize } from 'rxjs';
+import { PosSessionResponse } from '@/core/interfaces/pos-session';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pos-session-home-page',
   imports: [
     ButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DatePipe
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './pos-session-page.html',
   styles: ``,
 })
-export class PosSessionPage {
+export class PosSessionPage implements OnInit {
   #dialogService = inject(DialogService);
   #confirmationService = inject(ConfirmationService);
+  #posSessionApi = inject(PosSessionApi);
+
+  loading = signal(false);
+  posSession = signal<PosSessionResponse | null>(null);
+
+  ngOnInit(): void {
+    this.validateSession();
+  }
 
   openOpeningCashRegisterDlg(): void {
     const ref = this.#dialogService.open(OpeningCashRegisterDlg, {
@@ -36,11 +49,12 @@ export class PosSessionPage {
 
     ref?.onClose.subscribe(res => {
       if (res) {
+        this.validateSession();
       }
     })
   }
 
-  confirmCloseCashRegister(): void {
+  confirmCloseCashRegister(session: PosSessionResponse): void {
     this.#confirmationService.confirm({
       header: '¿Estas seguro de que quieres cerrar caja?',
       message: 'Al cerrar la caja no podrás hacer más modificaciones del monto contado en esta caja, ni en tus reporte de turno.',
@@ -57,8 +71,34 @@ export class PosSessionPage {
       },
 
       accept: () => {
-        console.log('Confirm target');
+        this.closeSession(session.id);
       }
     });
+  }
+
+  private closeSession(sessionId: number): void {
+    this.#posSessionApi.close(sessionId).subscribe(res => {
+      if (res && res.data) {
+        this.validateSession();
+      }
+    });
+  }
+
+  private validateSession(): void {
+    this.loading.set(true);
+    this.#posSessionApi.current()
+      .pipe(
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: res => {
+          if (res && res.data) {
+            this.posSession.set(res.data);
+          }
+        },
+        error: () => {
+          this.posSession.set(null);
+        }
+      });
   }
 }

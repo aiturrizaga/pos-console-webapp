@@ -5,6 +5,7 @@ import { SessionStore } from '@/core/services/session/session-store';
 import { SessionApi } from '@/core/services/session/session-api';
 import { KEYCLOAK_EVENT_SIGNAL, KeycloakEventType, ReadyArgs, typeEventArgs } from 'keycloak-angular';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { CashDrawerApi } from '@/core/services/cash-drawer/cash-drawer-api';
 
 export function waitForKeycloakReady(): Promise<boolean> {
   const keycloakSignal = inject(KEYCLOAK_EVENT_SIGNAL);
@@ -39,6 +40,7 @@ export class AppBootstrap {
   #sessionDb =  inject(SessionDb);
   #sessionStore =  inject(SessionStore);
   #sessionApi =  inject(SessionApi);
+  #cashDrawerApi = inject(CashDrawerApi);
 
   async init(): Promise<any> {
     const authenticated = await waitForKeycloakReady();
@@ -53,6 +55,7 @@ export class AppBootstrap {
       console.log('Loaded user profile', user);
 
       const session = await this.#sessionApi.getMe(user.id);
+      this.#cashDrawerApi.loadUserConfig().subscribe();
       this.#sessionStore.set(session.data);
       await this.#sessionDb.set(session.data);
       return session;

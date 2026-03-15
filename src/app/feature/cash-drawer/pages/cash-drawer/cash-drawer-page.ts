@@ -7,9 +7,12 @@ import { AutoCompleteCompleteEvent, AutoCompleteModule, AutoCompleteSelectEvent 
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductApi } from '@/core/services/product/product-api';
 import { ProductResponse, ProductSaleItem, ProductSkuResponse } from '@/core/interfaces/product';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, NgClass } from '@angular/common';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { finalize } from 'rxjs';
+import { PosSessionResponse } from '@/core/interfaces/pos-session';
+import { PosSessionApi } from '@/core/services/pos/pos-session-api';
 
 @Component({
   selector: 'app-cash-drawer-page',
@@ -23,7 +26,8 @@ import { InputTextModule } from 'primeng/inputtext';
     CurrencyPipe,
     InputNumberModule,
     InputTextModule,
-    FormsModule
+    FormsModule,
+    NgClass
   ],
   templateUrl: './cash-drawer-page.html',
   styles: ``,
@@ -31,6 +35,9 @@ import { InputTextModule } from 'primeng/inputtext';
 export class CashDrawerPage implements OnInit {
   searchCtrl = new FormControl();
   #productApi = inject(ProductApi);
+  #posSessionApi = inject(PosSessionApi);
+  loading = signal(false);
+  posSession = signal<PosSessionResponse | null>(null);
 
   searchedProducts = signal<ProductResponse[]>([]);
   favoriteItems = signal<ProductResponse[]>([]);
@@ -45,6 +52,7 @@ export class CashDrawerPage implements OnInit {
   });
 
   ngOnInit(): void {
+    this.validateSession();
     this.getFavoriteProducts();
   }
 
@@ -75,6 +83,24 @@ export class CashDrawerPage implements OnInit {
         this.favoriteItems.set(res.data.content);
       }
     })
+  }
+
+  private validateSession(): void {
+    this.loading.set(true);
+    this.#posSessionApi.current()
+      .pipe(
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: res => {
+          if (res && res.data) {
+            this.posSession.set(res.data);
+          }
+        },
+        error: () => {
+          this.posSession.set(null);
+        }
+      });
   }
 
 }
