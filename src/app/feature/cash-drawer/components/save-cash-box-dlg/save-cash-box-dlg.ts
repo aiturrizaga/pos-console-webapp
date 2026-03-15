@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputTextModule } from 'primeng/inputtext';
@@ -12,8 +12,15 @@ import { PaymentItem, PaymentMethod } from '@/core/interfaces/payment-method';
 import { ButtonModule } from 'primeng/button';
 import { PaymentMethodApi } from '@/core/services/payment-method/payment-method-api';
 import { SaleApi } from '@/core/services/sale/sale-api';
-import { CreateSaleRequest, PosSaleLineCreateRequest, PosSalePaymentCreateRequest } from '@/core/interfaces/pos-sale';
+import {
+  CreateSaleRequest,
+  PosSaleDetailResponse,
+  PosSaleLineCreateRequest,
+  PosSalePaymentCreateRequest
+} from '@/core/interfaces/pos-sale';
 import Keycloak from 'keycloak-js';
+import { SaleSuccessMsg } from '@/feature/cash-drawer/components/sale-success-msg/sale-success-msg';
+import { PrintService } from '@/core/services/print/print-service';
 
 @Component({
   selector: 'app-save-cash-box-dlg',
@@ -26,14 +33,16 @@ import Keycloak from 'keycloak-js';
     SelectModule,
     ButtonModule,
     CurrencyPipe,
+    SaleSuccessMsg,
   ],
   templateUrl: './save-cash-box-dlg.html',
   styles: ``,
 })
-export class SaveCashBoxDlg implements OnInit {
+export class SaveCashBoxDlg implements OnInit, OnDestroy {
   items = signal<ProductSaleItem[]>([]);
   total = signal(0);
   sessionId = signal<number | null>(null);
+  saleSuccess = signal<PosSaleDetailResponse | null>(null);
 
   private readonly instance: DynamicDialog | undefined;
   private readonly _dialogRef = inject(DynamicDialogRef);
@@ -42,6 +51,7 @@ export class SaveCashBoxDlg implements OnInit {
   #paymentMethodApi = inject(PaymentMethodApi);
   #saleApi = inject(SaleApi);
   #keycloak = inject(Keycloak);
+  #printService = inject(PrintService);
 
   documentTypes = signal([
     { id: 'SALE_NOTE', name: 'Nota de venta' },
@@ -75,6 +85,12 @@ export class SaveCashBoxDlg implements OnInit {
     this.getPaymentMethods();
   }
 
+  ngOnDestroy(): void {
+    if (this._dialogRef) {
+      this._dialogRef.close(this.saleSuccess());
+    }
+  }
+
   addPaymentItem(method: PaymentMethod): void {
     const amount = this.totalAmountCtrl.value ?? 0;
     if (amount <= 0) return;
@@ -90,6 +106,13 @@ export class SaveCashBoxDlg implements OnInit {
   removePaymentItem(id: number): void {
     this.paymentItems.update(items => items.filter(i => i.id !== id));
     this.totalAmountCtrl.setValue(this.remaining());
+  }
+
+  printReceipt(): void {
+    const sale = this.saleSuccess();
+    if (sale) {
+      this.#printService.printPdf(`${sale.id}/receipt`);
+    }
   }
 
   createSale(): void {
@@ -129,7 +152,8 @@ export class SaveCashBoxDlg implements OnInit {
 
     this.#saleApi.create(sale).subscribe(res => {
       if (res && res.data) {
-        this._dialogRef.close(true);
+        this.saleSuccess.set(res.data);
+        this.printReceipt();
       }
     })
   }
