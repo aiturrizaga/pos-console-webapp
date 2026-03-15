@@ -112,7 +112,7 @@
             <span class="text-xl font-medium">Guardar</span>
           </button>
 
-          <button type="button" pButton class="col-span-2">
+          <button type="button" pButton class="col-span-2" (click)="openCashBoxDlg()">
             <span class="text-xl font-medium">Cobrar {{ totalPrice() | currency:'PEN':'S/ ' }}</span>
           </button>
         </div>

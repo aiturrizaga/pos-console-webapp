@@ -13,6 +13,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { finalize } from 'rxjs';
 import { PosSessionResponse } from '@/core/interfaces/pos-session';
 import { PosSessionApi } from '@/core/services/pos/pos-session-api';
+import { DialogService } from 'primeng/dynamicdialog';
+import {
+  OpeningCashRegisterDlg
+} from '@/feature/pos-session/components/opening-cash-register-dlg/opening-cash-register-dlg';
+import { SaveCashBoxDlg } from '@/feature/cash-drawer/components/save-cash-box-dlg/save-cash-box-dlg';
 
 @Component({
   selector: 'app-cash-drawer-page',
@@ -29,6 +34,7 @@ import { PosSessionApi } from '@/core/services/pos/pos-session-api';
     FormsModule,
     NgClass
   ],
+  providers: [DialogService],
   templateUrl: './cash-drawer-page.html',
   styles: ``,
 })
@@ -36,6 +42,7 @@ export class CashDrawerPage implements OnInit {
   searchCtrl = new FormControl();
   #productApi = inject(ProductApi);
   #posSessionApi = inject(PosSessionApi);
+  #dialogService = inject(DialogService);
   loading = signal(false);
   posSession = signal<PosSessionResponse | null>(null);
 
@@ -81,6 +88,32 @@ export class CashDrawerPage implements OnInit {
     this.#productApi.getAll({ active: true }).subscribe(res => {
       if (res && res.data && res.data.content) {
         this.favoriteItems.set(res.data.content);
+      }
+    })
+  }
+
+  openCashBoxDlg(): void {
+    const ref = this.#dialogService.open(SaveCashBoxDlg, {
+      header: 'Caja registradora',
+      modal: true,
+      draggable: false,
+      closable: true,
+      closeOnEscape: true,
+      width: '80vw',
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      data: {
+        items: this.selectedProducts(),
+        totalPrice: this.totalPrice(),
+        sessionId: this.posSession()?.id,
+      }
+    });
+
+    ref?.onClose.subscribe(res => {
+      if (res) {
+        this.selectedProducts.set([]);
       }
     })
   }

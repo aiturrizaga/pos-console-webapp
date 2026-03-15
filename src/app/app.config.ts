@@ -1,4 +1,10 @@
-import { ApplicationConfig, inject, provideAppInitializer, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  LOCALE_ID,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners
+} from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -10,6 +16,11 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideKeycloakAngular, provideKeycloakTokenInterceptor } from '@/app.provides';
 import { AppBootstrap } from '@/core/services/session/app-bootstrap';
 import { tenantCompanyInterceptor } from '@/core/interceptors/tenant-company-interceptor';
+import { registerLocaleData } from '@angular/common';
+
+import localeEs419 from '@angular/common/locales/es-419';
+
+registerLocaleData(localeEs419);
 
 const SystemPreset = definePreset(Aura, {
   semantic: {
@@ -61,6 +72,7 @@ const SystemPreset = definePreset(Aura, {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-419' },
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideAppInitializer(() => {
