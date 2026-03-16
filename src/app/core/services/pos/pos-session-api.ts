@@ -32,12 +32,12 @@ export class PosSessionApi {
     return this.#http.post<ApiResponse<PosSessionResponse>>(`${ this.baseUrl }/open`, request);
   }
 
-  close(sessionId: number) {
+  close(sessionId: number, countedTotalAmount: number) {
     const request: PosSessionCloseRequest = {
       id: sessionId,
       closedBy: this.#keycloak.profile?.email ?? 'Admin',
       closingNote: '',
-      countedTotalAmount: 0
+      countedTotalAmount
     }
     return this.#http.post<ApiResponse<PosSessionResponse>>(`${ this.baseUrl }/close`, request);
   }

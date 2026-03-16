@@ -78,7 +78,8 @@ export class PosSessionPage implements OnInit {
   }
 
   private closeSession(sessionId: number): void {
-    this.#posSessionApi.close(sessionId).subscribe(res => {
+    const countedTotalAmount = this.posSession()?.totalSale ?? 0;
+    this.#posSessionApi.close(sessionId, countedTotalAmount).subscribe(res => {
       if (res && res.data) {
         this.validateSession();
       }
