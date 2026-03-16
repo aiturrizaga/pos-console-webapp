@@ -1,10 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { CashDrawerApi } from '@/core/services/cash-drawer/cash-drawer-api';
 import Keycloak from 'keycloak-js';
 import { environment } from '../../../../environments/environment';
-import { ApiResponse } from '@/core/interfaces/api-response';
-import { CreateSaleRequest, PosSaleCreateRequest, PosSaleDetailResponse } from '@/core/interfaces/pos-sale';
+import { ApiResponse, Page, Pageable } from '@/core/interfaces/api-response';
+import {
+  CreateSaleRequest,
+  PosSaleCreateRequest,
+  PosSaleDetailResponse,
+  PosSaleFilter
+} from '@/core/interfaces/pos-sale';
 
 @Injectable({
   providedIn: 'root',
@@ -24,5 +29,20 @@ export class SaleApi {
       terminalId: drawerUserConf.terminalId
     }
     return this.#http.post<ApiResponse<PosSaleDetailResponse>>(this.baseUrl, request);
+  }
+
+  getAll(filter: PosSaleFilter = {}, pageable: Pageable = {}) {
+    const params = new HttpParams({
+      fromObject: this.#clean({ ...filter, ...pageable })
+    });
+    return this.#http.get<ApiResponse<Page<PosSaleDetailResponse>>>(this.baseUrl, { params });
+  }
+
+  #clean(obj: Record<string, unknown>): Record<string, string> {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, v]) => v !== null && v !== undefined && v !== '')
+        .map(([k, v]) => [k, String(v)])
+    );
   }
 }

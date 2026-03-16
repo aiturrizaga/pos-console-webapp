@@ -12,6 +12,8 @@ export interface PosSessionResponse {
   expectedTotalAmount: number;
   countedTotalAmount: number;
   diffTotalAmount: number;
+  totalSale: number;
+  transactionQty: number;
 }
 
 export type PosSessionOpenRequest = Pick<PosSessionResponse, 'terminalId' | 'drawerId' | 'openedBy' | 'expectedTotalAmount' | 'openingNote'>;
@@ -24,6 +26,6 @@ export interface PosSessionFilter {
   drawerId?: number;
   status?: string;
   openedBy?: string;
-  openedFrom?: Date;
-  openedTo?: Date;
+  openedFrom?: string;
+  openedTo?: string;
 }

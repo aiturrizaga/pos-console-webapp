@@ -63,7 +63,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-2 gap-4">
         <div class="flex flex-col items-start gap-1">
-          <div class="text-4xl font-bold text-gray-700">S/ 0.00</div>
+          <div class="text-4xl font-bold text-gray-700">{{session.totalSale | currency:'PEN':'S/ '}}</div>
           <p class="text-base text-gray-600">Total de ventas neto soles</p>
         </div>
 
@@ -73,7 +73,7 @@
         </div>
 
         <div class="flex flex-col items-start gap-1">
-          <div class="text-4xl font-bold text-gray-700">0</div>
+          <div class="text-4xl font-bold text-gray-700">{{session.transactionQty}}</div>
           <p class="text-base text-gray-600">Transacciones</p>
         </div>
       </div>

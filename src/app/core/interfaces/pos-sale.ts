@@ -80,3 +80,16 @@ export interface PosSalePaymentResponse {
   paidAt: Date;
   receivedBy: string;
 }
+
+export interface PosSaleFilter {
+  sessionId?: number;
+  terminalId?: number;
+  customerId?: number;
+  status?: string;
+  currencyCode?: string;
+  cashierId?: string;
+  documentType?: string;
+  paidFrom?: string;
+  paidTo?: string;
+  q?: string;
+}

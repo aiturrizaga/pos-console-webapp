@@ -13,3 +13,9 @@ export interface Page<T> {
     totalPages: number;
   }
 }
+
+export interface Pageable {
+  page?: number;
+  size?: number;
+  sort?: string;
+}

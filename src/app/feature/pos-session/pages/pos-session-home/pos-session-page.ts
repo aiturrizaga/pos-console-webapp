@@ -9,14 +9,15 @@ import { ConfirmationService } from 'primeng/api';
 import { PosSessionApi } from '@/core/services/pos/pos-session-api';
 import { finalize } from 'rxjs';
 import { PosSessionResponse } from '@/core/interfaces/pos-session';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pos-session-home-page',
   imports: [
     ButtonModule,
     ConfirmDialogModule,
-    DatePipe
+    DatePipe,
+    CurrencyPipe
   ],
   providers: [DialogService, ConfirmationService],
   templateUrl: './pos-session-page.html',
