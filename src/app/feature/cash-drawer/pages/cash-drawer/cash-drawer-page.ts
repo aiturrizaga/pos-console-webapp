@@ -49,6 +49,7 @@ export class CashDrawerPage implements OnInit {
   searchedProducts = signal<ProductResponse[]>([]);
   favoriteItems = signal<ProductResponse[]>([]);
   selectedProducts = signal<ProductSaleItem[]>([]);
+  searchMode = signal<'favorite' | 'product' | 'category'>('favorite');
 
   totalPrice = computed(() => {
     return this.selectedProducts().reduce((sum, item) => {

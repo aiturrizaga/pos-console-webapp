@@ -18,17 +18,19 @@
      class="grid grid-cols-2 gap-2">
   <p-card header="Productos">
     <div class="flex justify-start items-center gap-2 mb-4">
-      <button type="button" class="cursor-pointer">
+      <button type="button" class="cursor-pointer" (click)="searchMode.set('favorite')">
         <p-chip label="Favoritos"
-                class="bg-primary-800! text-white!"/>
+                [ngClass]="{ 'bg-primary-800! text-white!': searchMode() === 'favorite' }"/>
       </button>
 
-      <button type="button" class="cursor-pointer">
-        <p-chip label="Productos"/>
+      <button type="button" class="cursor-pointer" (click)="searchMode.set('product')">
+        <p-chip label="Productos"
+                [ngClass]="{ 'bg-primary-800! text-white!': searchMode() === 'product' }"/>
       </button>
 
-      <button type="button" class="cursor-pointer">
-        <p-chip label="Categorias"/>
+      <button type="button" class="cursor-pointer" (click)="searchMode.set('category')">
+        <p-chip label="Categorias"
+                [ngClass]="{ 'bg-primary-800! text-white!': searchMode() === 'category' }"/>
       </button>
     </div>
 
@@ -46,14 +48,38 @@
           inputId="txtSearch"/>
       </div>
 
-      <div class="grid grid-cols-4 gap-2">
-        @for (item of favoriteItems(); track item.id) {
-          <button type="button" (click)="selectProduct(item)"
-                  class="border border-gray-300 p-2 cursor-pointer rounded hover:shadow h-24">
-            <span class="text-base font-medium">{{ item.name }}</span>
-          </button>
+      @switch (searchMode()) {
+        @case ('favorite') {
+          <div class="grid grid-cols-4 gap-2">
+            @for (item of favoriteItems(); track item.id) {
+              <button type="button" (click)="selectProduct(item)"
+                      class="border border-gray-300 p-2 cursor-pointer rounded hover:shadow h-24">
+                <span class="text-base font-medium">{{ item.name }}</span>
+              </button>
+            }
+          </div>
         }
-      </div>
+        @case ('product') {
+          <div class="flex flex-col gap-2 h-96 overflow-y-auto">
+            @for (item of favoriteItems(); track item.id) {
+              <div (click)="selectProduct(item)"
+                class="cursor-pointer flex items-center gap-3 w-full px-4 py-3 rounded-xl border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700">
+
+                <span class="flex-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  {{ item.name }}
+                </span>
+
+                  <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                  {{ item.sku.price | currency:'PEN':'S/ ' }}
+                </span>
+              </div>
+            }
+          </div>
+        }
+        @case ('category') {
+          <span>Category</span>
+        }
+      }
     </div>
   </p-card>
 
